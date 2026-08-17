@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Ivory & Ink — design tokens
+   ------------------------------------------------------------------ */
+@theme {
+  /* Palette.
+     `stone` is decorative only — it does not meet 4.5:1 on ivory.
+     Use `muted` for any text below display size. */
+  --color-ivory: #f7f4ef;
+  --color-shell: #e8e3da;
+  --color-stone: #a8a29a;
+  --color-muted: #5f5a54;
+  --color-ink: #14110e;
+  --color-oxblood: #6b2737;
+
+  /* Type */
+  --font-display: var(--font-instrument-serif), ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Fluid display scale */
+  /* The name is the hero's display moment — it's a personal portfolio, so
+     identity reads before positioning. Sized to fill most of the measure
+     without touching the right edge, keeping the asymmetry. */
+  --text-display-name: clamp(3.25rem, 13vw, 14rem);
+  --text-display-name--line-height: 0.86;
+  --text-display-name--letter-spacing: -0.015em;
+
+  /* Sized so the hero statement, its CTAs and the index strip all sit within
+     a 900px-tall viewport — display type that pushes the CTAs below the fold
+     is a worse hero, however good it looks in isolation. */
+  --text-display-2xl: clamp(2.75rem, 7.4vw, 8rem);
+  --text-display-2xl--line-height: 0.9;
+  --text-display-xl: clamp(2.5rem, 6.4vw, 6.5rem);
+  --text-display-xl--line-height: 0.94;
+  --text-display-lg: clamp(2.25rem, 5.5vw, 4.75rem);
+  --text-display-lg--line-height: 0.98;
+  --text-display-md: clamp(1.75rem, 3.6vw, 3rem);
+  --text-display-md--line-height: 1.06;
+  --text-lede: clamp(1.0625rem, 1.55vw, 1.375rem);
+  --text-lede--line-height: 1.6;
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1;
+
+  /* Editorial tracking */
+  --tracking-label: 0.18em;
+  --tracking-label-wide: 0.26em;
+
+  /* Motion — mirrored in lib/motion.ts so CSS and GSAP share one language */
+  --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-mask: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Clears the compact fixed header when jumping to an anchor. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Guards against any single wide child creating a horizontal scrollbar. */
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: var(--color-oxblood);
+    color: var(--color-ivory);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-oxblood);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  /* Never leave a keyboard user without a focus ring. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Components
+   ------------------------------------------------------------------ */
+@layer components {
+  /* Tracked-out uppercase metadata label — the editorial voice of the site. */
+  .label {
+    font-family: var(--font-sans);
+    font-size: var(--text-label);
+    line-height: 1;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .rule {
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-stone) 55%, transparent);
+  }
+
+  /* Underline that wipes in from the left on hover/focus. */
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 0.5s var(--ease-editorial);
+  }
+
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  /* Paper grain. Fixed, non-interactive, sits above the ground and below content. */
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.038;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* ------------------------------------------------------------------
+   Reduced motion — the CSS half of the switch.
+   The GSAP half lives in components/providers/MotionProvider.tsx.
+   ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
